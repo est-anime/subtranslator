@@ -2,7 +2,6 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const { Configuration, OpenAIApi } = require('openai');
-const SrtParser = require('srt-parser-2');
 const path = require('path');
 
 // Set up OpenAI API
@@ -12,14 +11,15 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const app = express();
-const port = 6000;
+const port = 3000;
 
 app.use(express.static('public'));
 app.use(fileUpload());
 
 // Function to read subtitle file
-const readSrtFile = (filePath) => {
+const readSrtFile = async (filePath) => {
     const fileContent = fs.readFileSync(filePath, 'utf8');
+    const { default: SrtParser } = await import('srt-parser-2');
     const parser = new SrtParser();
     return parser.fromSrt(fileContent);
 };
@@ -43,7 +43,8 @@ const translateSubtitles = async (subtitles) => {
 };
 
 // Function to write subtitles to file
-const writeSrtFile = (subtitles, outputPath) => {
+const writeSrtFile = async (subtitles, outputPath) => {
+    const { default: SrtParser } = await import('srt-parser-2');
     const parser = new SrtParser();
     const srtContent = parser.toSrt(subtitles);
     fs.writeFileSync(outputPath, srtContent, 'utf8');
@@ -61,9 +62,9 @@ app.post('/translate', async (req, res) => {
     subtitleFile.mv(inputPath, async (err) => {
         if (err) return res.status(500).send(err);
 
-        const subtitles = readSrtFile(inputPath);
+        const subtitles = await readSrtFile(inputPath);
         const translatedSubtitles = await translateSubtitles(subtitles);
-        writeSrtFile(translatedSubtitles, outputPath);
+        await writeSrtFile(translatedSubtitles, outputPath);
 
         res.download(outputPath, 'translated.srt', (err) => {
             if (err) {
