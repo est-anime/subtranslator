@@ -7,12 +7,12 @@ const path = require('path');
 
 // Set up OpenAI API
 const configuration = new Configuration({
-    apiKey: 'YOUR_OPENAI_API_KEY',
+    apiKey: 'sk-None-5x89mLIGWEQQaCEKYM2ET3BlbkFJLpucPYzYT690V1xznm6o',
 });
 const openai = new OpenAIApi(configuration);
 
 const app = express();
-const port = 3000;
+const port = 6000;
 
 app.use(express.static('public'));
 app.use(fileUpload());
