@@ -2,11 +2,11 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
-const { OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 
 // Set up OpenAI API
-const openai = new OpenAIApi({
-  api_key: process.env.OPENAI_API_KEY,
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 const app = express();
@@ -23,14 +23,14 @@ const readSrtFile = async (filePath) => {
     return parser.fromSrt(fileContent);
 };
 
-// Function to translate text using OpenAI API
+// Function to translate text using OpenAI's ChatGPT
 const translateText = async (text) => {
-    const response = await openai.createCompletion({
-        model: 'text-davinci-003',
+    const response = await openai.completions.create({
+        model: 'text-davinci-003', // Using ChatGPT 3.5 model
         prompt: `Translate the following English text to Hinglish:\n\n"${text}"\n\nTranslation:`,
         max_tokens: 150,
     });
-    return response.data.choices[0].text.trim();
+    return response.choices[0].text.trim();
 };
 
 // Function to translate subtitles
