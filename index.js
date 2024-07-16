@@ -1,8 +1,8 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
-const { Configuration, OpenAIApi } = require('openai');
 const path = require('path');
+const { OpenAIApi, Configuration } = require('openai');
 
 // Set up OpenAI API
 const openai = new OpenAIApi(new Configuration({
