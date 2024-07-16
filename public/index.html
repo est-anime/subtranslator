@@ -6,84 +6,89 @@
     <title>Subtitle Translator</title>
     <style>
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            color: #BB86FC;
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
         }
         .container {
-            background-color: #1F1F1F;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #444;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
         }
         input[type="file"] {
-            display: none;
-        }
-        .custom-file-upload {
-            background-color: #BB86FC;
-            color: #121212;
-            padding: 10px 20px;
-            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #333;
             cursor: pointer;
-        }
-        .custom-file-upload:hover {
-            background-color: #3700B3;
         }
         button {
-            background-color: #BB86FC;
-            color: #121212;
-            padding: 10px 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 20px;
         }
         button:hover {
-            background-color: #3700B3;
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Subtitle Translator</h1>
-        <form id="upload-form" enctype="multipart/form-data">
-            <label for="file-upload" class="custom-file-upload">
-                Choose Subtitle File
-            </label>
-            <input id="file-upload" type="file" name="file" accept=".srt" />
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".srt">
             <button type="submit">Translate</button>
         </form>
     </div>
+
     <script>
-        document.getElementById('upload-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const formData = new FormData();
-            const fileInput = document.getElementById('file-upload');
-            formData.append('file', fileInput.files[0]);
+        const form = document.getElementById('uploadForm');
 
-            const response = await fetch('/translate', {
-                method: 'POST',
-                body: formData,
-            });
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = 'translated.srt';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('http://localhost:5000/translate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to translate subtitles');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'translated.srt';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to translate subtitles');
+            }
         });
     </script>
 </body>
