@@ -2,13 +2,18 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
-const { Configuration, OpenAIApi } = require('openai');
+const { google } = require('googleapis');
 
-// Set up OpenAI API
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY',
-});
-const openai = new OpenAIApi(configuration);
+// Configure Google API client
+const googleConfig = {
+    apiKey: 'YOUR_GOOGLE_API_KEY',  // Replace with your actual API key
+};
+const googleTranslate = google.translate('v2');
+googleTranslate.context = {
+    _options: {
+        auth: googleConfig.apiKey,
+    },
+};
 
 const app = express();
 const port = 3000;
@@ -24,14 +29,14 @@ const readSrtFile = async (filePath) => {
     return parser.fromSrt(fileContent);
 };
 
-// Function to translate text using OpenAI API
+// Function to translate text using Google Gemini (Bard)
 const translateText = async (text) => {
-    const response = await openai.createCompletion({
-        model: 'text-davinci-003',
-        prompt: `Translate the following English text to Hinglish:\n\n"${text}"\n\nTranslation:`,
-        max_tokens: 150,
+    const response = await googleTranslate.translations.list({
+        q: text,
+        target: 'hi',  // Assuming Hinglish is treated as Hindi for the example
+        format: 'text',
     });
-    return response.data.choices[0].text.trim();
+    return response.data.translations[0].translatedText;
 };
 
 // Function to translate subtitles
