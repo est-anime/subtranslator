@@ -2,15 +2,16 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
-const { OpenAIApi, Configuration } = require('openai');
+const { Configuration, OpenAIApi } = require('openai');
 
 // Set up OpenAI API
-const openai = new OpenAIApi(new Configuration({
-    apiKey: 'sk-None-5x89mLIGWEQQaCEKYM2ET3BlbkFJLpucPYzYT690V1xznm6o',
-}));
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY',
+});
+const openai = new OpenAIApi(configuration);
 
 const app = express();
-const port = 6000;
+const port = 3000;
 
 app.use(express.static('public'));
 app.use(fileUpload());
