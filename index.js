@@ -6,7 +6,7 @@ const OpenAI = require('openai');
 
 // Set up OpenAI API
 const openai = new OpenAI({
-    apiKey: 'sk-None-5x89mLIGWEQQaCEKYM2ET3BlbkFJLpucPYzYT690V1xznm6o',
+    apiKey: 'sk-proj-GZBnKKCUg4Hht0UEzKyCT3BlbkFJQeC4JHTNNNWxBZt7Fye5',
 });
 
 const app = express();
